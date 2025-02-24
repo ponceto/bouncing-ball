@@ -40,7 +40,7 @@
 // Canvas
 // ---------------------------------------------------------------------------
 
-Canvas::Canvas(const std::string& title, int width, int height)
+Canvas::Canvas(const std::string& title, const int width, const int height)
     : _title(title)
     , _drawable(nullptr)
     , _renderer(nullptr)
@@ -52,20 +52,20 @@ Canvas::Canvas(const std::string& title, int width, int height)
     create(width, height);
 }
 
-auto Canvas::create(int width, int height) -> void
+auto Canvas::create(const int width, const int height) -> void
 {
     auto create_drawable = [&]() -> void
     {
-        const int      pos_x = SDL_WINDOWPOS_CENTERED;
-        const int      pos_y = SDL_WINDOWPOS_CENTERED;
+        const int      pos_x = SDL_WINDOWPOS_UNDEFINED;
+        const int      pos_y = SDL_WINDOWPOS_UNDEFINED;
         const int      dim_w = width;
         const int      dim_h = height;
         const uint32_t flags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
 
-        if(_drawable.get() == nullptr) {
+        if(bool(_drawable) == false) {
             _drawable.reset(::SDL_CreateWindow(_title.c_str(), pos_x, pos_y, dim_w, dim_h, flags));
         }
-        if(_drawable.get() == nullptr) {
+        if(bool(_drawable) == false) {
             throw std::runtime_error("SDL_CreateWindow() has failed");
         }
     };
@@ -75,40 +75,30 @@ auto Canvas::create(int width, int height) -> void
         const int      index = -1;
         const uint32_t flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
 
-        if(_renderer.get() == nullptr) {
+        if(bool(_renderer) == false) {
             _renderer.reset(::SDL_CreateRenderer(_drawable.get(), index, flags));
         }
-        if(_renderer.get() == nullptr) {
+        if(bool(_renderer) == false) {
             throw std::runtime_error("SDL_CreateRenderer() has failed");
         }
     };
 
     auto create_underlay = [&]() -> void
     {
-        const std::unique_ptr<SurfaceType> surface(::IMG_Load("assets/underlay.png"));
-
-        if(surface.get() == nullptr) {
-            throw std::runtime_error("IMG_Load() has failed");
+        if(bool(_underlay) == false) {
+            _underlay.reset(::IMG_LoadTexture(_renderer.get(), "assets/underlay.png"));
         }
-        if(_underlay.get() == nullptr) {
-            _underlay.reset(::SDL_CreateTextureFromSurface(_renderer.get(), surface.get()));
-        }
-        if(_underlay.get() == nullptr) {
+        if(bool(_underlay) == false) {
             throw std::runtime_error("SDL_CreateTextureFromSurface() has failed");
         }
     };
 
     auto create_overlay = [&]() -> void
     {
-        const std::unique_ptr<SurfaceType> surface(::IMG_Load("assets/overlay.png"));
-
-        if(surface.get() == nullptr) {
-            throw std::runtime_error("IMG_Load() has failed");
+        if(bool(_overlay) == false) {
+            _overlay.reset(::IMG_LoadTexture(_renderer.get(), "assets/overlay.png"));
         }
-        if(_overlay.get() == nullptr) {
-            _overlay.reset(::SDL_CreateTextureFromSurface(_renderer.get(), surface.get()));
-        }
-        if(_overlay.get() == nullptr) {
+        if(bool(_overlay) == false) {
             throw std::runtime_error("SDL_CreateTextureFromSurface() has failed");
         }
     };
@@ -126,67 +116,88 @@ auto Canvas::create(int width, int height) -> void
 
 auto Canvas::clear() -> void
 {
-    auto* renderer = _renderer.get();
-
-    if(renderer != nullptr) {
-        ::SDL_RenderClear(renderer);
-        if(_show_underlay != false) {
-            ::SDL_RenderCopy(renderer, _underlay.get(), nullptr, nullptr);
+    auto do_clear = [&](RendererType* renderer, TextureType* texture) -> void
+    {
+        if(renderer != nullptr) {
+            ::SDL_RenderClear(renderer);
+            if(texture != nullptr) {
+                ::SDL_RenderCopy(renderer, texture, nullptr, nullptr);
+            }
         }
-    }
+    };
+
+    return do_clear(_renderer.get(), (_show_underlay != false ? _underlay.get() : nullptr));
 }
 
 auto Canvas::present() -> void
 {
-    auto* renderer = _renderer.get();
-
-    if(renderer != nullptr) {
-        if(_show_overlay != false) {
-            ::SDL_RenderCopy(renderer, _overlay.get(), nullptr, nullptr);
+    auto do_present = [&](RendererType* renderer, TextureType* texture) -> void
+    {
+        if(renderer != nullptr) {
+            if(texture != nullptr) {
+                ::SDL_RenderCopy(renderer, texture, nullptr, nullptr);
+            }
+            ::SDL_RenderPresent(renderer);
         }
-        ::SDL_RenderPresent(renderer);
-    }
+    };
+
+    return do_present(_renderer.get(), (_show_overlay != false ? _overlay.get() : nullptr));
 }
 
 auto Canvas::color(const Col4i& color) -> void
 {
-    auto* renderer = _renderer.get();
+    auto do_color = [&](RendererType* renderer) -> void
+    {
+        if(renderer != nullptr) {
+            ::SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+        }
+    };
 
-    if(renderer != nullptr) {
-        ::SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-    }
+    return do_color(_renderer.get());
 }
 
 auto Canvas::line(int x1, int y1, int x2, int y2) -> void
 {
-    auto* renderer = _renderer.get();
+    auto do_line = [&](RendererType* renderer) -> void
+    {
+        if(renderer != nullptr) {
+            ::SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
+        }
+    };
 
-    if(renderer != nullptr) {
-        ::SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
-    }
+    return do_line(_renderer.get());
 }
 
 auto Canvas::circle(int xc, int yc, int r) -> void
 {
-    auto* renderer = _renderer.get();
-
-    if(renderer != nullptr) {
-        int x = 0;
-        int y = r;
-        int m = (5 - (4 * r));
-        while(x <= y) {
-            ::SDL_RenderDrawLine(renderer, (xc + x), (yc + y), (xc - x), (yc + y));
-            ::SDL_RenderDrawLine(renderer, (xc + y), (yc + x), (xc - y), (yc + x));
-            ::SDL_RenderDrawLine(renderer, (xc - x), (yc - y), (xc + x), (yc - y));
-            ::SDL_RenderDrawLine(renderer, (xc - y), (yc - x), (xc + y), (yc - x));
-            if(m > 0) {
-                --y;
-                m -= (8 * y);
+    auto do_circle = [&](RendererType* renderer) -> void
+    {
+        if(renderer != nullptr) {
+            int x = 0;
+            int y = r;
+            int m = (5 - (4 * r));
+            while(x <= y) {
+                const int x1 = (xc - x);
+                const int x2 = (xc + x);
+                const int x3 = (xc - y);
+                const int x4 = (xc + y);
+                const int y1 = (yc - y);
+                const int y2 = (yc + y);
+                const int y3 = (yc - x);
+                const int y4 = (yc + x);
+                ::SDL_RenderDrawLine(renderer, x1, y1, x2, y1);
+                ::SDL_RenderDrawLine(renderer, x1, y2, x2, y2);
+                ::SDL_RenderDrawLine(renderer, x3, y3, x4, y3);
+                ::SDL_RenderDrawLine(renderer, x3, y4, x4, y4);
+                if(m > 0) {
+                    m -= (8 * --y);
+                }
+                m += ((8 * ++x) + 4);
             }
-            ++x;
-            m += ((8 * x) + 4);
         }
-    }
+    };
+
+    return do_circle(_renderer.get());
 }
 
 // ---------------------------------------------------------------------------

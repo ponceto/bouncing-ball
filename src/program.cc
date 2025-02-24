@@ -47,14 +47,7 @@ auto Program::init(const ArgList& args) -> bool
     static const std::locale new_locale("");
     static const std::locale old_locale(std::locale::global(new_locale));
 
-    auto init_globals = [&]() -> bool
-    {
-        Globals::init();
-
-        return true;
-    };
-
-    auto do_init = [&]() -> bool
+    auto do_parse = [&]() -> bool
     {
         int argi = -1;
         for(auto& arg : args) {
@@ -68,55 +61,62 @@ auto Program::init(const ArgList& args) -> bool
                 return false;
             }
             else if(arg == "triangle") {
-                Globals::set_poly_vertices(3);
+                Globals::set_poly_vertices(PolygonType::TRIANGLE);
             }
             else if(arg == "square") {
-                Globals::set_poly_vertices(4);
+                Globals::set_poly_vertices(PolygonType::SQUARE);
             }
             else if(arg == "pentagon") {
-                Globals::set_poly_vertices(5);
+                Globals::set_poly_vertices(PolygonType::PENTAGON);
             }
             else if(arg == "hexagon") {
-                Globals::set_poly_vertices(6);
+                Globals::set_poly_vertices(PolygonType::HEXAGON);
             }
             else if(arg == "heptagon") {
-                Globals::set_poly_vertices(7);
+                Globals::set_poly_vertices(PolygonType::HEPTAGON);
             }
             else if(arg == "octagon") {
-                Globals::set_poly_vertices(8);
+                Globals::set_poly_vertices(PolygonType::OCTAGON);
             }
             else if(arg == "nonagon") {
-                Globals::set_poly_vertices(9);
+                Globals::set_poly_vertices(PolygonType::NONAGON);
             }
             else if(arg == "decagon") {
-                Globals::set_poly_vertices(10);
+                Globals::set_poly_vertices(PolygonType::DECAGON);
             }
             else if(arg == "hendecagon") {
-                Globals::set_poly_vertices(11);
+                Globals::set_poly_vertices(PolygonType::HENDECAGON);
             }
             else if(arg == "dodecagon") {
-                Globals::set_poly_vertices(12);
+                Globals::set_poly_vertices(PolygonType::DODECAGON);
             }
             else if(arg == "mercury") {
-                Globals::set_ball_gravity(3700.00f);
+                Globals::set_ball_gravity(GravityType::MERCURY);
             }
             else if(arg == "venus") {
-                Globals::set_ball_gravity(8870.00f);
+                Globals::set_ball_gravity(GravityType::VENUS);
             }
             else if(arg == "earth") {
-                Globals::set_ball_gravity(9806.65f);
+                Globals::set_ball_gravity(GravityType::EARTH);
             }
             else if(arg == "mars") {
-                Globals::set_ball_gravity(3728.00f);
+                Globals::set_ball_gravity(GravityType::MARS);
             }
             else if(arg == "moon") {
-                Globals::set_ball_gravity(1625.00f);
+                Globals::set_ball_gravity(GravityType::MOON);
             }
             else {
                 throw std::runtime_error(std::string("invalid argument") + ' ' + '\'' + arg + '\'');
             }
         }
-        return init_globals();
+        return true;
+    };
+
+    auto do_init = [&]() -> bool
+    {
+        Globals::init();
+
+        return do_parse();
     };
 
     return do_init();
@@ -127,9 +127,9 @@ auto Program::main(const ArgList& args) -> void
     std::unique_ptr<Application> application(new BouncingBall(Globals::app_width, Globals::app_height));
 
 #ifdef __EMSCRIPTEN__
-    auto do_loop = +[](void* data) -> void
+    auto em_main_loop = +[](void* data) -> void
     {
-        Application* application(reinterpret_cast<Application*>(data));
+        auto* application(reinterpret_cast<Application*>(data));
 
         if(application->running()) {
             application->main();
@@ -139,25 +139,34 @@ auto Program::main(const ArgList& args) -> void
             ::emscripten_cancel_main_loop();
         }
     };
-
-    auto loop = [&]() -> void
-    {
-        return ::emscripten_set_main_loop_arg(do_loop, application.release(), 0, 1);
-    };
-#else
-    auto loop = [&]() -> void
-    {
-        return application->main();
-    };
 #endif
+
+    auto main_loop = [&]() -> void
+    {
+#ifdef __EMSCRIPTEN__
+        ::emscripten_set_main_loop_arg(em_main_loop, application.release(), 0, 1);
+#else
+        if(bool(application) != false) {
+            application->main();
+        }
+#endif
+    };
 
     auto do_main = [&](std::ostream& stream) -> void
     {
-        Globals::dump(stream);
+        stream << "app_width" << " ....... " << Globals::app_width     << std::endl;
+        stream << "app_height" << " ...... " << Globals::app_height    << std::endl;
+        stream << "poly_vertices" << " ... " << Globals::poly_vertices << std::endl;
+        stream << "poly_radius" << " ..... " << Globals::poly_radius   << std::endl;
+        stream << "poly_omega" << " ...... " << Globals::poly_omega    << std::endl;
+        stream << "poly_friction" << " ... " << Globals::poly_friction << std::endl;
+        stream << "poly_gravity" << " .... " << Globals::poly_gravity  << std::endl;
+        stream << "ball_radius" << " ..... " << Globals::ball_radius   << std::endl;
+        stream << "ball_friction" << " ... " << Globals::ball_friction << std::endl;
+        stream << "ball_gravity" << " .... " << Globals::ball_gravity  << std::endl;
+        stream << "Pro tip: type <h> to display help"                  << std::endl;
 
-        stream << "Pro tip: type <h> to display help" << std::endl;
-
-        return loop();
+        return main_loop();
     };
 
     return do_main(std::cout);
@@ -170,7 +179,7 @@ auto Program::help(const ArgList& args) -> void
         const char* arg = args[0].c_str();
         const char* sep = ::strrchr(arg, '/');
         if(sep != nullptr) {
-            arg = sep + 1;
+            arg = (sep + 1);
         }
         return arg;
     };

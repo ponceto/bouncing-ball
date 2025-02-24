@@ -43,19 +43,21 @@ protected: // protected interface
 
     virtual auto shutdown() -> void override final;
 
-    virtual auto on_window(const WindowEventType& event) -> void override final;
+    virtual auto on_quit(const QuitEventType&) -> void override final;
 
-    virtual auto on_key_press(const KeyboardEventType& event) -> void override final;
+    virtual auto on_window(const WindowEventType&) -> void override final;
 
-    virtual auto on_key_release(const KeyboardEventType& event) -> void override final;
+    virtual auto on_key_press(const KeyboardEventType&) -> void override final;
 
-    virtual auto on_mouse_motion(const MouseMotionEventType& event) -> void override final;
+    virtual auto on_key_release(const KeyboardEventType&) -> void override final;
 
-    virtual auto on_mouse_button_press(const MouseButtonEventType& event) -> void override final;
+    virtual auto on_mouse_motion(const MouseMotionEventType&) -> void override final;
 
-    virtual auto on_mouse_button_release(const MouseButtonEventType& event) -> void override final;
+    virtual auto on_mouse_button_press(const MouseButtonEventType&) -> void override final;
 
-    virtual auto on_mouse_wheel(const MouseWheelEventType& event) -> void override final;
+    virtual auto on_mouse_button_release(const MouseButtonEventType&) -> void override final;
+
+    virtual auto on_mouse_wheel(const MouseWheelEventType&) -> void override final;
 
 private: // private interface
     auto create_canvas(int width, int height) -> void;

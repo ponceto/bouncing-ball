@@ -55,19 +55,21 @@ protected: // protected interface
 
     virtual auto shutdown() -> void = 0;
 
-    virtual auto on_window(const WindowEventType& event) -> void = 0;
+    virtual auto on_quit(const QuitEventType&) -> void = 0;
 
-    virtual auto on_key_press(const KeyboardEventType& event) -> void = 0;
+    virtual auto on_window(const WindowEventType&) -> void = 0;
 
-    virtual auto on_key_release(const KeyboardEventType& event) -> void = 0;
+    virtual auto on_key_press(const KeyboardEventType&) -> void = 0;
 
-    virtual auto on_mouse_motion(const MouseMotionEventType& event) -> void = 0;
+    virtual auto on_key_release(const KeyboardEventType&) -> void = 0;
 
-    virtual auto on_mouse_button_press(const MouseButtonEventType& event) -> void = 0;
+    virtual auto on_mouse_motion(const MouseMotionEventType&) -> void = 0;
 
-    virtual auto on_mouse_button_release(const MouseButtonEventType& event) -> void = 0;
+    virtual auto on_mouse_button_press(const MouseButtonEventType&) -> void = 0;
 
-    virtual auto on_mouse_wheel(const MouseWheelEventType& event) -> void = 0;
+    virtual auto on_mouse_button_release(const MouseButtonEventType&) -> void = 0;
+
+    virtual auto on_mouse_wheel(const MouseWheelEventType&) -> void = 0;
 
 protected: // protected data
     const std::string _title;

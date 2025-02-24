@@ -22,13 +22,19 @@ In order to build the [WASM](https://en.wikipedia.org/wiki/WebAssembly) version,
 
 ### Build the project
 
-Build the Linux/BSD version:
+To build the project, simply type:
 
 ```
 make
 ```
 
-Build the WASM version:
+You can also use the `-j` option if you want to build in parallel with `GNU make`:
+
+```
+make -j{number-of-jobs}
+```
+
+To build the WASM version, please use `Makefile.wasm`:
 
 ```
 make -f Makefile.wasm
@@ -36,13 +42,13 @@ make -f Makefile.wasm
 
 ### Clean the project
 
-Clean the Linux/BSD version:
+To clean the project, simply type:
 
 ```
 make clean
 ```
 
-Clean the WASM version:
+To clean the WASM version, please use `Makefile.wasm`:
 
 ```
 make -f Makefile.wasm clean
@@ -50,9 +56,9 @@ make -f Makefile.wasm clean
 
 ## HOW TO RUN
 
-### Run the Linux/BSD version
+### Usage
 
-Usage:
+Command line options:
 
 ```
 Usage: bouncing-ball.bin [OPTIONS...] [SHAPE] [PLANET]
@@ -93,7 +99,7 @@ escape ........... quit the program
 
 ```
 
-Example:
+### Run
 
 ```
 ./bouncing-ball.bin
@@ -101,13 +107,13 @@ Example:
 
 ### Run the WASM version
 
-Start the Python builtin http server:
+To run the WASM version, you can use the Python built-in http server:
 
 ```
 python3 -m http.server
 ```
 
-Then open browser and point to [localhost/bouncing-ball.html](http://127.0.0.1:8000/bouncing-ball.html)
+Then open your browser and point to [localhost/bouncing-ball.html](http://127.0.0.1:8000/bouncing-ball.html)
 
 ### Test in your browser
 

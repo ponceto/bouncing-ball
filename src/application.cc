@@ -108,7 +108,7 @@ void Application::main()
         while(::SDL_PollEvent(&event) != 0) {
             switch(event.type) {
                 case SDL_QUIT:
-                    quit();
+                    on_quit(event.quit);
                     break;
                 case SDL_WINDOWEVENT:
                     on_window(event.window);

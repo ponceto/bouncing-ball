@@ -24,16 +24,41 @@
 // type aliases
 // ---------------------------------------------------------------------------
 
-using DrawableType         = SDL_Window;
-using RendererType         = SDL_Renderer;
-using SurfaceType          = SDL_Surface;
-using TextureType          = SDL_Texture;
-using EventType            = SDL_Event;
-using WindowEventType      = SDL_WindowEvent;
-using KeyboardEventType    = SDL_KeyboardEvent;
-using MouseMotionEventType = SDL_MouseMotionEvent;
-using MouseButtonEventType = SDL_MouseButtonEvent;
-using MouseWheelEventType  = SDL_MouseWheelEvent;
+using DrawableType                = SDL_Window;
+using RendererType                = SDL_Renderer;
+using SurfaceType                 = SDL_Surface;
+using TextureType                 = SDL_Texture;
+using EventType                   = SDL_Event;
+using CommonEventType             = SDL_CommonEvent;
+using DisplayEventType            = SDL_DisplayEvent;
+using WindowEventType             = SDL_WindowEvent;
+using KeyboardEventType           = SDL_KeyboardEvent;
+using TextEditingEventType        = SDL_TextEditingEvent;
+using TextEditingExtEventType     = SDL_TextEditingExtEvent;
+using TextInputEventType          = SDL_TextInputEvent;
+using MouseMotionEventType        = SDL_MouseMotionEvent;
+using MouseButtonEventType        = SDL_MouseButtonEvent;
+using MouseWheelEventType         = SDL_MouseWheelEvent;
+using JoyAxisEventType            = SDL_JoyAxisEvent;
+using JoyBallEventType            = SDL_JoyBallEvent;
+using JoyHatEventType             = SDL_JoyHatEvent;
+using JoyButtonEventType          = SDL_JoyButtonEvent;
+using JoyDeviceEventType          = SDL_JoyDeviceEvent;
+using JoyBatteryEventType         = SDL_JoyBatteryEvent;
+using ControllerAxisEventType     = SDL_ControllerAxisEvent;
+using ControllerButtonEventType   = SDL_ControllerButtonEvent;
+using ControllerDeviceEventType   = SDL_ControllerDeviceEvent;
+using ControllerTouchpadEventType = SDL_ControllerTouchpadEvent;
+using ControllerSensorEventType   = SDL_ControllerSensorEvent;
+using AudioDeviceEventType        = SDL_AudioDeviceEvent;
+using SensorEventType             = SDL_SensorEvent;
+using QuitEventType               = SDL_QuitEvent;
+using UserEventType               = SDL_UserEvent;
+using SysWMEventType              = SDL_SysWMEvent;
+using TouchFingerEventType        = SDL_TouchFingerEvent;
+using MultiGestureEventType       = SDL_MultiGestureEvent;
+using DollarGestureEventType      = SDL_DollarGestureEvent;
+using DropEventType               = SDL_DropEvent;
 
 // ---------------------------------------------------------------------------
 // std::default_delete<DrawableType>
@@ -150,7 +175,7 @@ struct Seg4i
 class Canvas
 {
 public: // public interface
-    Canvas(const std::string& title, int width, int height);
+    Canvas(const std::string& title, const int width, const int height);
 
     Canvas(const Canvas&) = delete;
 
@@ -189,7 +214,7 @@ public: // public interface
     }
 
 protected: // protected interface
-    auto create(int width, int height) -> void;
+    auto create(const int width, const int height) -> void;
 
 protected: // protected data
     std::string                   _title;
