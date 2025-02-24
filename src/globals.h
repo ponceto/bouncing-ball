@@ -96,6 +96,38 @@ struct GlobalsMax
 };
 
 // ---------------------------------------------------------------------------
+// PolygonType
+// ---------------------------------------------------------------------------
+
+struct PolygonType
+{
+    static constexpr int TRIANGLE   =  3;
+    static constexpr int SQUARE     =  4;
+    static constexpr int PENTAGON   =  5;
+    static constexpr int HEXAGON    =  6;
+    static constexpr int HEPTAGON   =  7;
+    static constexpr int OCTAGON    =  8;
+    static constexpr int NONAGON    =  9;
+    static constexpr int DECAGON    = 10;
+    static constexpr int HENDECAGON = 11;
+    static constexpr int DODECAGON  = 12;
+};
+
+// ---------------------------------------------------------------------------
+// GravityType
+// ---------------------------------------------------------------------------
+
+struct GravityType
+{
+    static constexpr float NONE    =    0.00f;
+    static constexpr float MERCURY = 3700.00f;
+    static constexpr float VENUS   = 8870.00f;
+    static constexpr float EARTH   = 9806.65f;
+    static constexpr float MARS    = 3728.00f;
+    static constexpr float MOON    = 1625.00f;
+};
+
+// ---------------------------------------------------------------------------
 // End-Of-File
 // ---------------------------------------------------------------------------
 

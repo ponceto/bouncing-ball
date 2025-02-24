@@ -47,14 +47,7 @@ auto Program::init(const ArgList& args) -> bool
     static const std::locale new_locale("");
     static const std::locale old_locale(std::locale::global(new_locale));
 
-    auto init_globals = [&]() -> bool
-    {
-        Globals::init();
-
-        return true;
-    };
-
-    auto do_init = [&]() -> bool
+    auto do_parse = [&]() -> bool
     {
         int argi = -1;
         for(auto& arg : args) {
@@ -68,55 +61,62 @@ auto Program::init(const ArgList& args) -> bool
                 return false;
             }
             else if(arg == "triangle") {
-                Globals::set_poly_vertices(3);
+                Globals::set_poly_vertices(PolygonType::TRIANGLE);
             }
             else if(arg == "square") {
-                Globals::set_poly_vertices(4);
+                Globals::set_poly_vertices(PolygonType::SQUARE);
             }
             else if(arg == "pentagon") {
-                Globals::set_poly_vertices(5);
+                Globals::set_poly_vertices(PolygonType::PENTAGON);
             }
             else if(arg == "hexagon") {
-                Globals::set_poly_vertices(6);
+                Globals::set_poly_vertices(PolygonType::HEXAGON);
             }
             else if(arg == "heptagon") {
-                Globals::set_poly_vertices(7);
+                Globals::set_poly_vertices(PolygonType::HEPTAGON);
             }
             else if(arg == "octagon") {
-                Globals::set_poly_vertices(8);
+                Globals::set_poly_vertices(PolygonType::OCTAGON);
             }
             else if(arg == "nonagon") {
-                Globals::set_poly_vertices(9);
+                Globals::set_poly_vertices(PolygonType::NONAGON);
             }
             else if(arg == "decagon") {
-                Globals::set_poly_vertices(10);
+                Globals::set_poly_vertices(PolygonType::DECAGON);
             }
             else if(arg == "hendecagon") {
-                Globals::set_poly_vertices(11);
+                Globals::set_poly_vertices(PolygonType::HENDECAGON);
             }
             else if(arg == "dodecagon") {
-                Globals::set_poly_vertices(12);
+                Globals::set_poly_vertices(PolygonType::DODECAGON);
             }
             else if(arg == "mercury") {
-                Globals::set_ball_gravity(3700.00f);
+                Globals::set_ball_gravity(GravityType::MERCURY);
             }
             else if(arg == "venus") {
-                Globals::set_ball_gravity(8870.00f);
+                Globals::set_ball_gravity(GravityType::VENUS);
             }
             else if(arg == "earth") {
-                Globals::set_ball_gravity(9806.65f);
+                Globals::set_ball_gravity(GravityType::EARTH);
             }
             else if(arg == "mars") {
-                Globals::set_ball_gravity(3728.00f);
+                Globals::set_ball_gravity(GravityType::MARS);
             }
             else if(arg == "moon") {
-                Globals::set_ball_gravity(1625.00f);
+                Globals::set_ball_gravity(GravityType::MOON);
             }
             else {
                 throw std::runtime_error(std::string("invalid argument") + ' ' + '\'' + arg + '\'');
             }
         }
-        return init_globals();
+        return true;
+    };
+
+    auto do_init = [&]() -> bool
+    {
+        Globals::init();
+
+        return do_parse();
     };
 
     return do_init();

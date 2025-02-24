@@ -150,7 +150,7 @@ struct Seg4i
 class Canvas
 {
 public: // public interface
-    Canvas(const std::string& title, int width, int height);
+    Canvas(const std::string& title, const int width, const int height);
 
     Canvas(const Canvas&) = delete;
 
@@ -189,7 +189,7 @@ public: // public interface
     }
 
 protected: // protected interface
-    auto create(int width, int height) -> void;
+    auto create(const int width, const int height) -> void;
 
 protected: // protected data
     std::string                   _title;

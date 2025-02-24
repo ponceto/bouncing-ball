@@ -74,13 +74,13 @@ inline auto clampf(float val, float min, float max) -> float
 int   Globals::app_width     =  960;
 int   Globals::app_height    =  540;
 int   Globals::poly_vertices =    6;
-float Globals::poly_radius   =  250.00f;
+float Globals::poly_radius   =  260.00f;
 float Globals::poly_omega    =    2.09f;
 float Globals::poly_friction =    0.00f;
-float Globals::poly_gravity  =    0.00f;
-float Globals::ball_radius   =  100.00f;
+float Globals::poly_gravity  = GravityType::NONE;
+float Globals::ball_radius   =   65.00f;
 float Globals::ball_friction =    0.25f;
-float Globals::ball_gravity  = 9806.65f;
+float Globals::ball_gravity  = GravityType::EARTH;
 #else
 int   Globals::app_width     = 1280;
 int   Globals::app_height    =  720;
@@ -88,10 +88,10 @@ int   Globals::poly_vertices =    6;
 float Globals::poly_radius   =  350.00f;
 float Globals::poly_omega    =    2.09f;
 float Globals::poly_friction =    0.00f;
-float Globals::poly_gravity  =    0.00f;
+float Globals::poly_gravity  = GravityType::NONE;
 float Globals::ball_radius   =  100.00f;
 float Globals::ball_friction =    0.25f;
-float Globals::ball_gravity  = 9806.65f;
+float Globals::ball_gravity  = GravityType::EARTH;
 #endif
 
 // ---------------------------------------------------------------------------

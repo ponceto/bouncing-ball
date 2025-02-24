@@ -57,7 +57,7 @@ BouncingBall::BouncingBall(const int width, const int height)
 
 auto BouncingBall::create_canvas(int width, int height) -> void
 {
-    if(_canvas.get() == nullptr) {
+    if(bool(_canvas) == false) {
         _canvas = std::make_unique<Canvas>(_title, width, height);
         _size   = Vec2f(width, height);
         _center = Pos2f(Pos2f() + (_size / 2.0f));
