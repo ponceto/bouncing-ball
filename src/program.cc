@@ -124,13 +124,9 @@ auto Program::init(const ArgList& args) -> bool
 
 auto Program::main(const ArgList& args) -> void
 {
-    std::unique_ptr<Application> application(new BouncingBall(Globals::app_width, Globals::app_height));
-
 #ifdef __EMSCRIPTEN__
-    auto em_main_loop = +[](void* data) -> void
+    auto em_main_loop = +[](BouncingBall* application) -> void
     {
-        auto* application(reinterpret_cast<Application*>(data));
-
         if(application->running()) {
             application->main();
         }
@@ -143,12 +139,11 @@ auto Program::main(const ArgList& args) -> void
 
     auto main_loop = [&]() -> void
     {
+        std::unique_ptr<BouncingBall> application(new BouncingBall(Globals::app_width, Globals::app_height));
 #ifdef __EMSCRIPTEN__
-        ::emscripten_set_main_loop_arg(em_main_loop, application.release(), 0, 1);
+        ::emscripten_set_main_loop_arg(reinterpret_cast<em_arg_callback_func>(em_main_loop), application.release(), 0, 1);
 #else
-        if(bool(application) != false) {
-            application->main();
-        }
+        application->main();
 #endif
     };
 
