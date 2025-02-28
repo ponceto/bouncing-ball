@@ -104,6 +104,14 @@ bouncing_ball_LDADD = \
 	-lm \
 	$(NULL)
 
+bouncing_ball_CLEANFILES = \
+	bouncing-ball.bin \
+	bouncing-ball.data \
+	bouncing-ball.html \
+	bouncing-ball.wasm \
+	bouncing-ball.js \
+	$(NULL)
+
 # ----------------------------------------------------------------------------
 # build bouncing_ball
 # ----------------------------------------------------------------------------
@@ -118,7 +126,7 @@ $(bouncing_ball_PROGRAM): $(bouncing_ball_OBJECTS)
 # ----------------------------------------------------------------------------
 
 clean_bouncing_ball:
-	$(RM) $(RMFLAGS) $(bouncing_ball_OBJECTS) $(bouncing_ball_PROGRAM)
+	$(RM) $(RMFLAGS) $(bouncing_ball_OBJECTS) $(bouncing_ball_PROGRAM) $(bouncing_ball_CLEANFILES)
 
 # ----------------------------------------------------------------------------
 # End-Of-File

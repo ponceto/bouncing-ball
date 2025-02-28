@@ -125,13 +125,13 @@ auto Program::init(const ArgList& args) -> bool
 auto Program::main(const ArgList& args) -> void
 {
 #ifdef __EMSCRIPTEN__
-    auto em_main_loop = +[](BouncingBall* application) -> void
+    auto em_main_loop = +[](BouncingBall* bouncing_ball) -> void
     {
-        if(application->running()) {
-            application->main();
+        if(bouncing_ball->running()) {
+            bouncing_ball->loop();
         }
         else {
-            application = (delete application, nullptr);
+            bouncing_ball = (delete bouncing_ball, nullptr);
             ::emscripten_cancel_main_loop();
         }
     };
@@ -139,11 +139,13 @@ auto Program::main(const ArgList& args) -> void
 
     auto main_loop = [&]() -> void
     {
-        std::unique_ptr<BouncingBall> application(new BouncingBall(Globals::app_width, Globals::app_height));
+        std::unique_ptr<BouncingBall> bouncing_ball(new BouncingBall(Globals::app_width, Globals::app_height));
 #ifdef __EMSCRIPTEN__
-        ::emscripten_set_main_loop_arg(reinterpret_cast<em_arg_callback_func>(em_main_loop), application.release(), 0, 1);
+        ::emscripten_set_main_loop_arg(reinterpret_cast<em_arg_callback_func>(em_main_loop), bouncing_ball.release(), 0, 1);
 #else
-        application->main();
+        while(bouncing_ball->running()) {
+            bouncing_ball->loop();
+        }
 #endif
     };
 

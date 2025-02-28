@@ -83,7 +83,7 @@ Application::~Application()
     ::SDL_Quit();
 }
 
-void Application::main()
+void Application::loop()
 {
     auto get_ticks = [&]() -> bool
     {
@@ -138,8 +138,7 @@ void Application::main()
         return running();
     };
 
-#ifdef __EMSCRIPTEN__
-    auto do_main = [&]() -> void
+    auto do_loop = [&]() -> void
     {
         if(poll_events()) {
             if(get_ticks()) {
@@ -148,19 +147,8 @@ void Application::main()
             }
         }
     };
-#else
-    auto do_main = [&]() -> void
-    {
-        while(poll_events()) {
-            if(get_ticks()) {
-                update();
-                render();
-            }
-        }
-    };
-#endif
 
-    return do_main();
+    return do_loop();
 }
 
 void Application::quit()
